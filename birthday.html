@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Feliz Quase Aniversário</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Configurações Gerais --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #2b1055 0%, #000000 100%);
+            overflow: hidden;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+        }
+
+        /* --- Canvas dos Fogos (Fica no fundo) --- */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* --- Conteúdo Central (Fica na frente dos fogos) --- */
+        .conteudo {
+            z-index: 10;
+            text-align: center;
+            position: relative;
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- O Texto Principal --- */
+        #mensagem {
+            font-family: 'Dancing Script', cursive; /* Fonte nova */
+            font-size: 3.5rem; /* Fonte bem grande */
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(255, 105, 180, 0.8), 0 0 30px #9c27b0; /* Brilho neon */
+            min-height: 150px; /* Espaço reservado maior */
+            margin-bottom: 20px;
+            line-height: 1.2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- Estilo dos Botões --- */
+        button {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            outline: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        /* Botão Inicial (Branco/Neutro) */
+        #btn-inicio {
+            background-color: white;
+            color: black;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            animation: pulseWhite 2s infinite;
+        }
+
+        @keyframes pulseWhite {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+
+        /* Botão Final (Roxo) */
+        #btn-final {
+            display: none; /* Começa escondido */
+            background-color: #9c27b0;
+            color: white;
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.6);
+            animation: pulsePurple 2s infinite;
+            margin-top: 20px;
+        }
+
+        @keyframes pulsePurple {
+            0% { box-shadow: 0 0 0 0 rgba(156, 39, 176, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(156, 39, 176, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(156, 39, 176, 0); }
+        }
+
+        /* Cursor piscante da máquina de escrever */
+        .cursor {
+            display: inline-block;
+            width: 3px;
+            height: 3rem; /* Altura do cursor ajustada à fonte */
+            background-color: white;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Ajustes Mobile */
+        @media (max-width: 400px) {
+            #mensagem { font-size: 2.5rem; } 
+            .cursor { height: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-fogos"></canvas>
+
+    <div class="conteudo">
+        <div id="mensagem"></div>
+
+        <button id="btn-inicio" onclick="iniciarCelebracao()">Toque aqui</button>
+        <button id="btn-final" onclick="proximaFase()">Toque para continuar</button>
+    </div>
+
+    <script>
+        // --- LÓGICA DOS FOGOS (MANTIDA IGUAL) ---
+        const canvas = document.getElementById('canvas-fogos');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let fogosAtivos = false;
+        const particulas = [];
+        const cores = ['#ff0000', '#dc143c', '#ff69b4', '#ff1493', '#9c27b0', '#8a2be2', '#da70d6', '#ffffff'];
+
+        function redimensionarCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', redimensionarCanvas);
+
+        class Particula {
+            constructor(x, y, cor) {
+                this.x = x;
+                this.y = y;
+                this.cor = cor;
+                const angulo = Math.random() * Math.PI * 2;
+                const velocidade = Math.random() * 5 + 2; 
+                this.vx = Math.cos(angulo) * velocidade;
+                this.vy = Math.sin(angulo) * velocidade;
+                this.alpha = 1;
+                this.vida = Math.random() * 0.02 + 0.01;
+            }
+            atualizar() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.08; 
+                this.alpha -= this.vida;
+            }
+            desenhar() {
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.cor;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function criarExplosao() {
+            if (!fogosAtivos) return;
+            if (Math.random() < 0.15) { 
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * (canvas.height * 0.6); 
+                const corBase = cores[Math.floor(Math.random() * cores.length)];
+                for (let i = 0; i < 40; i++) {
+                    particulas.push(new Particula(x, y, corBase));
+                }
+            }
+        }
+
+        function animarFogos() {
+            ctx.globalAlpha = 0.2;
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            criarExplosao();
+
+            for (let i = particulas.length - 1; i >= 0; i--) {
+                particulas[i].atualizar();
+                particulas[i].desenhar();
+                if (particulas[i].alpha <= 0) {
+                    particulas.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(animarFogos);
+        }
+        animarFogos();
+
+
+        // --- LÓGICA DA MENSAGEM ---
+
+        function iniciarCelebracao() {
+            const btnInicio = document.getElementById('btn-inicio');
+            btnInicio.style.display = 'none';
+            fogosAtivos = true; // Ativa os fogos
+
+            // Inicia a escrita com um pequeno delay
+            setTimeout(() => {
+                escreverTexto("Feliz quase aniversário Luiza", 0);
+                }, 500);
+        }
+
+        function escreverTexto(texto, index) {
+            const divMensagem = document.getElementById('mensagem');
+            const spanCursor = '<span class="cursor"></span>';
+            
+            let textoAtual = divMensagem.innerText; 
+            
+            if (index < texto.length) {
+                divMensagem.innerHTML = texto.substring(0, index + 1) + spanCursor;
+                setTimeout(() => escreverTexto(texto, index + 1), 150); 
+            } else {
+                divMensagem.innerHTML = texto + spanCursor; 
+                setTimeout(mostrarBotaoFinal, 800);
+            }
+        }
+
+        function mostrarBotaoFinal() {
+            const btnFinal = document.getElementById('btn-final');
+            btnFinal.style.display = 'block';
+        }
+
+        function proximaFase() {
+            // --- AQUI ESTÁ O REDIRECIONAMENTO ---
+            // Certifique-se de que o arquivo do cartão se chama 'cartao.html'
+            window.location.href = "cake.html";
+        }
+    </script>
+</body>
+</html>

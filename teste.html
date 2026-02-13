@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uma Surpresa Especial</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000; 
+            transition: background-color 1.5s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        body.surpresa-ativa {
+            background-color: #f3e5f5; 
+        }
+
+        #btn-surpresa {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            background-color: #7b1fa2; 
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 10;
+            transition: transform 0.3s ease;
+        }
+
+        #btn-surpresa:hover {
+            transform: scale(1.1);
+            background-color: #8e24aa;
+        }
+
+        #quadro-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 2s ease forwards;
+            max-width: 90%; /* Garante margem em telas pequenas */
+        }
+
+        .moldura {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border: 10px solid #fff;
+        }
+
+        /* --- ALTERAÇÕES DE TAMANHO AQUI --- */
+        .moldura img {
+            width: 100%;      /* Ocupa a largura total da moldura */
+            max-width: 600px;  /* Aumentado de 300px para 600px */
+            max-height: 80vh; /* Não deixa a imagem maior que a tela */
+            display: block;
+            border-radius: 4px;
+            object-fit: contain;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <button id="btn-surpresa">Toque para uma surpre(espero que pegue a referência)</button>
+
+    <div id="quadro-container">
+        <div class="moldura">
+            <img src="img.jpeg" alt="Desenho" id="imagem-desenho">
+        </div>
+    </div>
+
+    <audio id="musica-surpresa" src="dompeddrito.mp3"></audio>
+
+    <script>
+        const btn = document.getElementById('btn-surpresa');
+        const quadro = document.getElementById('quadro-container');
+        const musica = document.getElementById('musica-surpresa');
+        const corpo = document.body;
+
+        btn.addEventListener('click', () => {
+            btn.style.display = 'none';
+            corpo.classList.add('surpresa-ativa');
+            quadro.style.display = 'flex';
+            musica.play();
+
+            var duration = 10000 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+              return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+              var timeLeft = animationEnd - Date.now();
+
+              if (timeLeft <= 0) {
+                return clearInterval(interval);
+              }
+
+              var particleCount = 50 * (timeLeft / duration);
+              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        });
+    </script>
+</body>
+</html>

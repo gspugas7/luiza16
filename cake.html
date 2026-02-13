@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Faça um Pedido 🎂</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- ESTILOS GERAIS --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            /* Fundo escuro para destacar o brilho das velas */
+            background: radial-gradient(circle at center, #2b1055 0%, #000000 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            cursor: pointer; 
+        }
+
+        /* --- INSTRUÇÃO --- */
+        #instructions {
+            position: absolute;
+            top: 15%;
+            width: 90%;
+            text-align: center;
+            color: #ffccbc;
+            font-size: 2rem;
+            text-shadow: 0 0 10px rgba(255, 64, 129, 0.5);
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+
+        /* --- BALÕES (Fundo) --- */
+        .balloon {
+            position: absolute;
+            width: 40px; height: 50px;
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+            z-index: 1; opacity: 0.4;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(110vh) translateX(0); }
+            100% { transform: translateY(-100px) translateX(50px); }
+        }
+
+        /* --- O BOLO --- */
+        .cake-container {
+            position: relative;
+            width: 300px; height: 300px;
+            margin: 20px auto;
+            z-index: 10;
+            margin-top: 80px;
+            pointer-events: none; 
+        }
+
+        .cake {
+            position: absolute;
+            bottom: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 220px; height: 120px;
+            background: linear-gradient(to right, #d81b60, #ad1457);
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+            pointer-events: auto; 
+        }
+
+        .cake:before {
+            content: ""; position: absolute; top: -40px; left: 0;
+            width: 100%; height: 40px;
+            background: linear-gradient(to right, #ec407a, #d81b60);
+            border-radius: 10px 10px 0 0;
+        }
+
+        .cake:after {
+            content: ""; position: absolute; top: -70px; left: 10%;
+            width: 80%; height: 30px;
+            background: linear-gradient(to right, #f48fb1, #f06292);
+            border-radius: 10px 10px 0 0;
+        }
+
+        .frosting {
+            position: absolute; top: -75px; left: 15%;
+            width: 70%; height: 10px;
+            background: #ffffff; border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5); z-index: 2;
+        }
+
+        .decoration {
+            position: absolute; width: 12px; height: 12px;
+            border-radius: 50%; background: #ffeb3b;
+            box-shadow: 0 0 5px #ffeb3b; z-index: 3;
+        }
+
+        /* --- VELAS --- */
+        .candle-container {
+            position: absolute; top: -105px; left: 0;
+            width: 100%; display: flex; justify-content: center;
+            gap: 20px; z-index: 15;
+            pointer-events: auto;
+        }
+
+        .candle {
+            position: relative; width: 14px; height: 35px;
+            background: repeating-linear-gradient(45deg, #fff, #fff 4px, #7b1fa2 4px, #7b1fa2 8px);
+            border-radius: 4px; cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .flame {
+            position: absolute; top: -25px; left: 50%;
+            transform: translateX(-50%);
+            width: 16px; height: 26px;
+            background: radial-gradient(ellipse at center, #ffff00, #ff9900, #ff5722);
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 10px #ff9900, 0 0 20px #ff5722, 0 0 40px #ff5722;
+            animation: flicker 0.1s infinite alternate;
+            z-index: 20; opacity: 1; transition: opacity 0.3s;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1); opacity: 1; }
+            100% { transform: translateX(-50%) scale(1.1); opacity: 0.8; }
+        }
+
+        .candle.blown .flame { opacity: 0; animation: none; }
+
+        .smoke {
+            position: absolute; top: -25px; left: 50%;
+            transform: translateX(-50%); width: 8px; height: 0;
+            background: rgba(255, 255, 255, 0.6); border-radius: 10px;
+            opacity: 0; transition: all 0.5s ease;
+        }
+
+        .candle.blown .smoke { animation: smokeRise 2s forwards; }
+
+        @keyframes smokeRise {
+            0% { height: 0; opacity: 0; }
+            20% { height: 20px; opacity: 0.7; }
+            100% { height: 50px; opacity: 0; transform: translateX(-50%) translateY(-40px) scale(2); }
+        }
+
+        /* --- MENSAGEM FINAL --- */
+        .wish-message {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px; border-radius: 20px;
+            box-shadow: 0 0 50px rgba(216, 27, 96, 0.6);
+            text-align: center; z-index: 100;
+            opacity: 0; width: 85%; max-width: 350px;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: #333;
+        }
+
+        .wish-message.show { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        
+        .wish-message h2 { 
+            color: #d81b60; 
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.2rem; margin-bottom: 15px; 
+        }
+        
+        .wish-message p { color: #555; font-size: 1.1rem; margin-bottom: 25px; line-height: 1.4; }
+
+        /* --- BOTÃO DE AÇÃO --- */
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #d81b60, #880e4f);
+            color: white; border: none; border-radius: 30px;
+            cursor: pointer; font-size: 1rem; font-weight: bold;
+            box-shadow: 0 5px 15px rgba(216, 27, 96, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            margin-top: 10px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+        }
+
+        .btn:active { transform: scale(0.95); }
+
+        /* --- RESPONSIVIDADE --- */
+        @media (max-width: 600px) {
+            #instructions { font-size: 1.5rem; top: 12%; }
+            .cake-container { width: 250px; height: 250px; margin-top: 50px; }
+            .cake { width: 180px; height: 100px; }
+            .candle-container { gap: 15px; top: -95px; }
+        }
+    </style>
+</head>
+<body>
+
+    <p id="instructions">Faça um pedido e toque na tela para apagar as velas! ✨</p>
+
+    <div class="cake-container">
+        <div class="cake">
+            <div class="candle-container" id="candleContainer"></div>
+            <div class="frosting"></div>
+        </div>
+    </div>
+
+    <div class="wish-message" id="wishMessage">
+        <h2>✨ Parabéns!!! ✨</h2>
+        <p>Que seu pedido se realize e seu ano seja mágico! 🎂💜</p>
+        
+        <button class="btn" onclick="irParaPresentes()">continuar</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            initGame();
+        });
+
+        const totalCandles = 5;
+        let candlesBlown = 0;
+        let allCandlesBlown = false;
+
+        function initGame() {
+            createCandles();
+            createBalloons();
+            createDecorations();
+            
+            // Detecta toque em qualquer lugar
+            document.body.addEventListener('click', handleInteraction);
+            document.body.addEventListener('touchstart', handleInteraction, {passive: false});
+        }
+
+        function handleInteraction(e) {
+            // Ignora se for clique no botão ou na mensagem
+            if (e.target.closest('.btn') || e.target.closest('.wish-message')) return;
+            
+            // Apaga uma vela aleatória
+            blowRandomCandle();
+        }
+
+        // Criar Velas
+        function createCandles() {
+            const container = document.getElementById("candleContainer");
+            for (let i = 0; i < totalCandles; i++) {
+                const candle = document.createElement("div");
+                candle.className = "candle";
+                
+                candle.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    blowOutCandle.call(this);
+                });
+                
+                const flame = document.createElement("div"); flame.className = "flame";
+                const smoke = document.createElement("div"); smoke.className = "smoke";
+                candle.appendChild(flame); candle.appendChild(smoke);
+                container.appendChild(candle);
+            }
+        }
+
+        function blowRandomCandle() {
+            if (allCandlesBlown) return;
+            const unblownCandles = document.querySelectorAll('.candle:not(.blown)');
+            if (unblownCandles.length > 0) {
+                const randomIndex = Math.floor(Math.random() * unblownCandles.length);
+                const candleToBlow = unblownCandles[randomIndex];
+                blowOutCandle.call(candleToBlow);
+            }
+        }
+
+        function blowOutCandle() {
+            if (!this.classList.contains("blown")) {
+                this.classList.add("blown");
+                candlesBlown++;
+                
+                if (navigator.vibrate) navigator.vibrate(50);
+
+                if (candlesBlown === totalCandles && !allCandlesBlown) {
+                    allCandlesBlown = true;
+                    document.getElementById('instructions').style.opacity = '0';
+                    setTimeout(showWishMessage, 1000);
+                }
+            }
+        }
+
+        // Efeitos de Fundo
+        function createBalloons() {
+            const colors = ["#d81b60", "#7b1fa2", "#ff4081", "#8e24aa"];
+            for (let i = 0; i < 15; i++) {
+                const balloon = document.createElement("div");
+                balloon.className = "balloon";
+                balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                balloon.style.left = `${Math.random() * 95}%`;
+                balloon.style.animationDuration = `${15 + Math.random() * 10}s`;
+                balloon.style.animationDelay = `${Math.random() * 5}s`;
+                document.body.appendChild(balloon);
+            }
+        }
+
+        function createDecorations() {
+            const cake = document.querySelector(".cake");
+            const colors = ["#ffeb3b", "#ff4081", "#ffffff"];
+            for (let i = 0; i < 10; i++) {
+                const dec = document.createElement("div"); dec.className = "decoration";
+                dec.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                dec.style.top = `${-20 - Math.random() * 40}px`; 
+                dec.style.left = `${10 + Math.random() * 80}%`;
+                cake.appendChild(dec);
+            }
+        }
+
+        function showWishMessage() { document.getElementById("wishMessage").classList.add("show"); }
+        
+        // --- FUNÇÃO DE REDIRECIONAMENTO ---
+        function irParaPresentes() {
+            // Redireciona para a página de presentes
+            window.location.href = "card.html";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para Luiza</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Reset --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Fundo Roxo puxando para o Branco */
+            background: linear-gradient(135deg, #f3e5f5 0%, #ffffff 100%);
+            font-family: 'Lora', serif;
+            perspective: 1200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- Balões --- */
+        .balao {
+            position: absolute;
+            bottom: -100px;
+            width: 40px;
+            height: 50px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            z-index: -1;
+            opacity: 0.7;
+            animation: subir linear infinite;
+        }
+
+        .balao::before { /* Fio do balão */
+            content: "";
+            position: absolute;
+            width: 1px;
+            height: 50px;
+            background: rgba(0,0,0,0.2);
+            top: 50px;
+            left: 20px;
+        }
+
+        @keyframes subir {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+            100% { transform: translateY(-120vh) rotate(20deg); opacity: 0; }
+        }
+
+        /* --- O Cartão 3D --- */
+        .cartao-container {
+            width: 90%;
+            max-width: 360px;
+            height: 65vh;
+            min-height: 480px;
+            position: relative;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .cartao {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .cartao.virado {
+            transform: rotateY(180deg);
+        }
+
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            background-color: #fff;
+        }
+
+        /* === FRENTE === */
+        .frente {
+            background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            border: 8px solid #fff;
+            transform: rotateY(0deg); 
+        }
+
+        .frente h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.15);
+            margin-bottom: 10px;
+        }
+
+        .icone-capa {
+            font-size: 4rem;
+            margin: 15px 0;
+            animation: flutuar 3s ease-in-out infinite;
+        }
+
+        @keyframes flutuar {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .toque-aviso {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        /* === VERSO (Conteúdo) === */
+        .verso {
+            background-color: #fff;
+            transform: rotateY(180deg);
+            padding: 20px;
+            color: #333;
+            background-image: linear-gradient(#f9f9f9 1px, transparent 1px);
+            background-size: 100% 2em;
+        }
+
+        .cabecalho {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ff9a9e;
+            padding-bottom: 15px;
+            background-color: white; 
+        }
+
+        .minha-foto {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #ff9a9e;
+            margin-right: 15px;
+        }
+
+        .titulo-carta {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
+            color: #d81b60;
+            line-height: 1.1;
+        }
+
+        .corpo-texto {
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #444;
+            text-align: left;
+            /* Adicionado padding para o botão não ficar colado no texto final */
+            padding-bottom: 10px;
+        }
+
+        .assinatura {
+            margin-top: 20px;
+            text-align: right;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            color: #d81b60;
+            font-weight: bold;
+            margin-bottom: 20px; /* Espaço para o botão */
+        }
+
+        /* --- ESTILO DO BOTÃO DE CONTINUAR --- */
+        .botao-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        .btn-proximo {
+            background: linear-gradient(135deg, #d81b60, #ff80ab);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(216, 27, 96, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-proximo:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 5px rgba(216, 27, 96, 0.3);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="cartao-container" onclick="virarCartao()">
+        <div class="cartao" id="cartaoElemento">
+            
+            <div class="face frente">
+                <h1>Para Luiza</h1>
+                <div class="icone-capa">✉️</div>
+                <div class="toque-aviso">(Toque para abrir)</div>
+            </div>
+
+            <div class="face verso">
+                <div class="cabecalho">
+                    <img src="2.png" alt="Foto" class="minha-foto">
+                    <div class="titulo-carta">Uma carta aberta para você...</div>
+                </div>
+
+                <div class="corpo-texto">
+                    <p><strong>Luiza,</strong></p>
+                    <br>
+                    <p>Hoje é quase seu dia… e mesmo sabendo que as coisas terminaram, eu não poderia deixar essa data passar em branco. Eu sei que você pediu para eu não te chamar mais, e eu respeito isso. De verdade. Mas tive que dar um “jeitinho” para falar com você hoje, porque simplesmente não seria justo deixar o aniversário de uma pessoa que foi – e ainda é – especial para mim, passar como se fosse um dia qualquer.</p>
+                    <br>
+                    <p>Você é uma mulher maravilhosa. Linda, inteligente, forte, cheia de personalidade e com um potencial gigantesco. Eu sempre admirei isso em você e acredito que você pode conquistar tudo o que quiser. E pode ter certeza, eu vou sempre ser um dos seus maiores torcedores, mesmo que agora esteja torcendo um pouco mais distante. Eu quero que você seja feliz. Que esse novo ano da sua vida venha com paz, crescimento, realizações e pessoas que valorizem a mulher incrível que você é, que você chegue aonde almeja, no topo, e  aquela garota sonhadora que saiu de Dom Pedrito conquiste o mundo e se torne uma grandíssima farmacêutica.</p>
+                    <br>
+                    <p>E quem sabe… se o destino e Deus quiserem, daqui breve ou um pouco mais a gente se reencontra, igual como aconteceu antes, naquele dia 23, mas dessa vez como pessoas certas na hora certa.</p>
+                    <br>
+                    <p>Feliz aniversário! Que seu dia seja tão especial quanto você é.</p>
+                    
+                    <div class="assinatura">
+                        Com carinho, Gabriel. 
+                    </div>
+
+                    <div class="botao-container">
+                        <button class="btn-proximo" onclick="irParaProxima(event)">Hora dos presentes</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function virarCartao() {
+            const cartao = document.getElementById('cartaoElemento');
+            cartao.classList.toggle('virado');
+        }
+
+        // Função para ir para a próxima página
+        function irParaProxima(event) {
+            // Isso impede que o clique no botão ative o 'virarCartao' do container
+            event.stopPropagation();
+            
+            // Redireciona para a página do bolo
+            window.location.href = "gift.html"; 
+        }
+
+        // Função para criar balões flutuantes
+        function criarBalao() {
+            const balao = document.createElement("div");
+            balao.classList.add("balao");
+            
+            // Posição horizontal aleatória
+            balao.style.left = Math.random() * 100 + "vw";
+            
+            // Cores aleatórias festivas
+            const cores = ['#ff9a9e', '#fad0c4', '#a18cd1', '#fbc2eb', '#84fab0', '#ffecd2'];
+            balao.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
+            
+            // Tamanho e duração aleatórios para naturalidade
+            const duracao = Math.random() * 4 + 6;
+            balao.style.animationDuration = duracao + "s";
+            balao.style.width = Math.random() * 20 + 30 + "px";
+            balao.style.height = (parseFloat(balao.style.width) * 1.2) + "px";
+            
+            document.body.appendChild(balao);
+            
+            // Remove o balão após a animação para não sobrecarregar a memória
+            setTimeout(() => {
+                balao.remove();
+            }, duracao * 1000);
+        }
+
+        // Cria um novo balão a cada 600ms
+        setInterval(criarBalao, 600);
+    </script>
+
+</body>
+</html>
